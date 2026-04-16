@@ -66,6 +66,26 @@ struct TripDetailMapView: View {
                 endAddressText = trip.endAddress
                 if let b = trip.odometerBefore { odometerBeforeText = String(format: "%.1f", b) }
                 if let a = trip.odometerAfter { odometerAfterText = String(format: "%.1f", a) }
+
+                // M10: 경로 좌표 기반 카메라 초기화
+                let coords = trip.coordinates
+                if coords.count >= 2 {
+                    let lats = coords.map(\.latitude)
+                    let lngs = coords.map(\.longitude)
+                    let center = CLLocationCoordinate2D(
+                        latitude: (lats.min()! + lats.max()!) / 2,
+                        longitude: (lngs.min()! + lngs.max()!) / 2
+                    )
+                    let span = MKCoordinateSpan(
+                        latitudeDelta: (lats.max()! - lats.min()!) * 1.4 + 0.005,
+                        longitudeDelta: (lngs.max()! - lngs.min()!) * 1.4 + 0.005
+                    )
+                    mapCameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                }
+            }
+            .onDisappear {
+                guard !trip.isDeleted else { return }
+                saveChanges()
             }
         }
     }
@@ -359,8 +379,11 @@ struct TripDetailMapView: View {
 
     private var deleteButton: some View {
         Button {
-            viewModel.delete(trip: trip)
+            let tripToDelete = trip
             dismiss()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                viewModel.delete(trip: tripToDelete)
+            }
         } label: {
             HStack {
                 Image(systemName: "trash")

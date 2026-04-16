@@ -163,7 +163,7 @@ struct MyPageView: View {
         .padding(14)
         .background(KohipsTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .swipeActions(edge: .trailing) {
+        .contextMenu {
             Button(role: .destructive) {
                 viewModel.deleteVehicle(vehicle)
             } label: {

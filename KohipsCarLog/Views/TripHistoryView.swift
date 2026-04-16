@@ -315,19 +315,18 @@ struct TripHistoryView: View {
 
         switch periodMode {
         case .daily:
-            let day = calendar.date(byAdding: .day, value: currentPeriodOffset, to: today)!
-            let nextDay = calendar.date(byAdding: .day, value: 1, to: day)!
+            let day = calendar.date(byAdding: .day, value: currentPeriodOffset, to: today) ?? today
+            let nextDay = calendar.date(byAdding: .day, value: 1, to: day) ?? today
             return (day, nextDay)
         case .weekly:
-            let weekStart = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
-            let adjustedStart = calendar.date(byAdding: .weekOfYear, value: currentPeriodOffset, to: weekStart)!
-            let weekEnd = calendar.date(byAdding: .day, value: 6, to: adjustedStart)!
-            let nextWeek = calendar.date(byAdding: .day, value: 7, to: adjustedStart)!
+            let weekStart = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today)) ?? today
+            let adjustedStart = calendar.date(byAdding: .weekOfYear, value: currentPeriodOffset, to: weekStart) ?? today
+            let nextWeek = calendar.date(byAdding: .day, value: 7, to: adjustedStart) ?? today
             return (adjustedStart, nextWeek)
         case .monthly:
-            let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
-            let adjustedStart = calendar.date(byAdding: .month, value: currentPeriodOffset, to: monthStart)!
-            let nextMonth = calendar.date(byAdding: .month, value: 1, to: adjustedStart)!
+            let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: today)) ?? today
+            let adjustedStart = calendar.date(byAdding: .month, value: currentPeriodOffset, to: monthStart) ?? today
+            let nextMonth = calendar.date(byAdding: .month, value: 1, to: adjustedStart) ?? today
             return (adjustedStart, nextMonth)
         }
     }

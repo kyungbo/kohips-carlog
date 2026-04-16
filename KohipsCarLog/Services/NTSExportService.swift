@@ -27,15 +27,15 @@ enum NTSExportService {
 
         for trip in trips {
             let date = formatter.string(from: trip.startTime)
-            let purpose = safe(trip.purposeDetail ?? trip.purpose.label)
-            let start = safe(trip.startAddress)
-            let end = safe(trip.endAddress)
+            let purpose = csvField(trip.purposeDetail ?? trip.purpose.label)
+            let start = csvField(trip.startAddress)
+            let end = csvField(trip.endAddress)
             let odoBefore = trip.odometerBefore.map { String(format: "%.1f", $0) } ?? ""
             let odoAfter = trip.odometerAfter.map { String(format: "%.1f", $0) } ?? ""
             let distance = String(format: "%.1f", trip.distanceKm)
             let bizKm = String(format: "%.1f", trip.businessDistanceKm)
             let perKm = String(format: "%.1f", trip.personalDistanceKm)
-            let memo = safe(trip.memo)
+            let memo = csvField(trip.memo)
 
             csv += "\(date),\(purpose),\(start),\(end),\(odoBefore),\(odoAfter),\(distance),\(bizKm),\(perKm),\(memo)\n"
 
@@ -51,9 +51,12 @@ enum NTSExportService {
         return csv
     }
 
-    private static func safe(_ text: String) -> String {
-        text.replacingOccurrences(of: ",", with: " ")
-            .replacingOccurrences(of: "\n", with: " ")
+    /// RFC 4180: 쉼표·줄바꿈·큰따옴표가 포함된 필드는 큰따옴표로 감싸고, 내부 " → ""
+    private static func csvField(_ text: String) -> String {
+        if text.contains(",") || text.contains("\"") || text.contains("\n") {
+            return "\"" + text.replacingOccurrences(of: "\"", with: "\"\"") + "\""
+        }
+        return text
     }
 
     // MARK: - PDF (별지 제84호의2)
@@ -233,7 +236,7 @@ enum NTSExportService {
             let text = i < texts.count ? texts[i] : ""
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.alignment = .center
-            paragraphStyle.lineBreakMode = .byTruncatingTail
+            paragraphStyle.lineBreakMode = .byWordWrapping
             let attr: [NSAttributedString.Key: Any] = [
                 .font: font,
                 .paragraphStyle: paragraphStyle,

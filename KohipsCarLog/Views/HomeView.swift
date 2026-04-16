@@ -39,7 +39,9 @@ struct HomeView: View {
                     summarySection
 
                     // Recent Trips
-                    if !viewModel.allTrips.isEmpty {
+                    if viewModel.allTrips.isEmpty {
+                        emptyStateView
+                    } else {
                         recentTripsSection
                     }
 
@@ -120,6 +122,29 @@ struct HomeView: View {
                 ratio: monthRatio,
                 title: "이번 달 업무용 비율"
             )
+        }
+    }
+
+    // MARK: - Empty State
+
+    private var emptyStateView: some View {
+        KohipsCard(padding: 24) {
+            VStack(spacing: 16) {
+                Image(systemName: "car.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(KohipsTheme.textTertiary)
+
+                Text("아직 운행 기록이 없습니다")
+                    .font(.kohipsHeadline)
+                    .foregroundStyle(KohipsTheme.textPrimary)
+
+                Text("주행이 자동으로 감지되거나,\n수동 기록 버튼으로 시작할 수 있습니다")
+                    .font(.kohipsBody)
+                    .foregroundStyle(KohipsTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
         }
     }
 

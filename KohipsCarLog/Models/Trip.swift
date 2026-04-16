@@ -77,7 +77,7 @@ final class Trip {
 
     var durationFormatted: String {
         guard let end = endTime else { return "기록 중…" }
-        let seconds = Int(end.timeIntervalSince(startTime))
+        let seconds = max(0, Int(end.timeIntervalSince(startTime)))
         let h = seconds / 3600
         let m = (seconds % 3600) / 60
         return h > 0 ? "\(h)시간 \(m)분" : "\(m)분"
@@ -100,6 +100,7 @@ enum TripPurpose: String, CaseIterable {
         }
     }
 
+    /// 출퇴근은 세법상 업무용에 포함 (법인세법 시행령 §50의2)
     var isBusiness: Bool {
         self == .businessGeneral || self == .commute
     }
